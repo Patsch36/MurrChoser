@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <img alt="Murr logo" class="logo" src="@/assets/M.png" />
+    <h1>urr Chooser</h1>
+    <h1 class="big-screen">Murr Chooser</h1>
 
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -17,39 +17,62 @@ import HelloWorld from './components/HelloWorld.vue'
     </div>
   </header>
 
-  <RouterView />
+  <RouterView/>
 </template>
 
 <style scoped>
 header {
   line-height: 1.5;
-  max-height: 100vh;
+  max-height: 10vh;
+  display: flex;
+}
+
+header h1 {
+  margin-top: 0.5rem;
 }
 
 .logo {
   display: block;
-  margin: 0 auto 2rem;
+  padding: 10px;
+  /* width: 64px; */
+  max-height: inherit
+}
+
+.wrapper{
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.big-screen{
+  display: none;
 }
 
 nav {
   width: 100%;
-  font-size: 12px;
+  font-size: 1rem;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 5px;
 }
 
 nav a.router-link-exact-active {
-  color: var(--color-text);
+  color: var(--color-primary);
+}
+
+nav a:hover{
+  color: var(--color-primary-dark-2)
 }
 
 nav a.router-link-exact-active:hover {
   background-color: transparent;
+  color: var(--color-primary)
 }
 
 nav a {
   display: inline-block;
   padding: 0 1rem;
   border-left: 1px solid var(--color-border);
+  color: var(--color-text); /* Setze die Standardfarbe der Links auf grau */
 }
 
 nav a:first-of-type {
@@ -58,28 +81,54 @@ nav a:first-of-type {
 
 @media (min-width: 1024px) {
   header {
+    min-height: 100%;
+    max-width: 40vw;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
+    margin-block: auto;
+    /* transform: translateY(-10%); */
+  }
+
+  header h1 {
+    display: none;
   }
 
   .logo {
-    margin: 0 2rem 0 0;
+    max-height: max-content;
+    height: 400px;
+    width: 400px;
+    /* margin: 0 2rem 0 0; */
   }
 
   header .wrapper {
+    width: 80%;
     display: flex;
-    place-items: flex-start;
+    justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
+    margin: 0;
+  }
+
+  .big-screen{
+    display: block;
+    font-size: 3rem;
+    margin-bottom: 16px;
   }
 
   nav {
     text-align: left;
     margin-left: -1rem;
-    font-size: 1rem;
+    font-size: 1.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    padding: 1rem 0;
-    margin-top: 1rem;
+    /* padding: 1rem 0; */
+    /* margin-top: 1rem; */
   }
 }
 </style>

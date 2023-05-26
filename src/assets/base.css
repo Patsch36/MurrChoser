@@ -33,6 +33,10 @@
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
 
+  --color-primary: rgba(62, 255, 86, 1);
+  --color-primary-dark-1: rgba(45, 184, 61, 1);
+  --color-primary-dark-2: rgba(36, 148, 50, 1);
+
   --section-gap: 160px;
 }
 
@@ -60,6 +64,7 @@
 
 body {
   min-height: 100vh;
+  min-width: 100vw;
   color: var(--color-text);
   background: var(--color-background);
   transition: color 0.5s, background-color 0.5s;
