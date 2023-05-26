@@ -28,7 +28,9 @@ header {
 }
 
 header h1 {
-  margin-top: 0.5rem;
+  margin-block: auto;
+  /* padding: 10px; */
+  font-size: 2.5rem;
 }
 
 .logo {
