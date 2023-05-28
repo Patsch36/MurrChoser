@@ -9,7 +9,6 @@ import { RouterLink, RouterView } from 'vue-router'
     <h1 class="big-screen">Murr Chooser</h1>
 
     <div class="wrapper">
-
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
@@ -17,7 +16,7 @@ import { RouterLink, RouterView } from 'vue-router'
     </div>
   </header>
 
-  <RouterView/>
+  <RouterView />
 </template>
 
 <style scoped>
@@ -37,16 +36,16 @@ header h1 {
   display: block;
   padding: 10px;
   /* width: 64px; */
-  max-height: inherit
+  max-height: inherit;
 }
 
-.wrapper{
+.wrapper {
   display: flex;
   align-items: center;
   margin-left: auto;
 }
 
-.big-screen{
+.big-screen {
   display: none;
 }
 
@@ -61,13 +60,13 @@ nav a.router-link-exact-active {
   color: var(--color-primary);
 }
 
-nav a:hover{
-  color: var(--color-primary-dark-2)
+nav a:hover {
+  color: var(--color-primary-dark-2);
 }
 
 nav a.router-link-exact-active:hover {
   background-color: transparent;
-  color: var(--color-primary)
+  color: var(--color-primary);
 }
 
 nav a {
@@ -115,7 +114,7 @@ nav a:first-of-type {
     margin: 0;
   }
 
-  .big-screen{
+  .big-screen {
     display: block;
     font-size: 3rem;
     margin-bottom: 16px;
