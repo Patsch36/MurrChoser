@@ -25,27 +25,6 @@ const handleFileSelect = (event: Event) => {
     
     // Emit-Event mit dem Dateiobjekt als Payload
     emit('file-selected', file);
-    // const file = input.files[0];
-    // const reader = new FileReader();
-
-    // reader.onload = () => {
-    //   const arrayBuffer = reader.result as ArrayBuffer;
-    //   const uint8Array = new Uint8Array(arrayBuffer);
-    //   const workbook = new Excel.Workbook();
-    //   workbook.xlsx.load(uint8Array).then(() => {
-    //     console.log('Datei eingelesen:', workbook);
-
-    //     worksheets = workbook.worksheets.map(elem => elem.name)
-
-    //     const worksheet = workbook.worksheets[0];
-
-    //     console.log(worksheet.getRow(10).values)
-    //   }).catch((error) => {
-    //     console.error('Fehler beim Einlesen der Datei:', error);
-    //   });
-    // };
-
-    // reader.readAsArrayBuffer(file);
 
   } else {
     // Keine Datei ausgewählt
@@ -76,7 +55,7 @@ const handleFileSelect = (event: Event) => {
 
 .custom-file-input{
   width: auto;
-  border: 1px solid #999;
+  border: 1px solid var(--color-border-light);
   border-radius: 3px;
   padding: 8px 10px;
   isolation: isolate;
@@ -101,7 +80,7 @@ const handleFileSelect = (event: Event) => {
   content: 'Select some files';
   display: inline-block;
   background: linear-gradient(top, #f9f9f9, #e3e3e3);
-  border: 1px solid #999;
+  border: 1px solid var(--color-border-light);
   border-radius: 3px;
   padding: 5px 8px;
   outline: none;

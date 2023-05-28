@@ -2,6 +2,7 @@
 import FileUpload from '@/components/FileUpload.vue'
 import { ref } from 'vue';
 import Excel from 'exceljs';
+import SelectInput from '@/components/SelectInput.vue';
 
 const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
@@ -28,6 +29,7 @@ const handleFileSelected = (file: File) => {
 
   reader.readAsArrayBuffer(file);
 };
+
 </script>
 
 <template>
@@ -38,12 +40,8 @@ const handleFileSelected = (file: File) => {
       <FileUpload  headerText="Moderatorenplan auswählen" :type = "excelFileType" class="fileupload"/>
     </div>
     <h2>Worksheets</h2>
-    <div>
-    <select v-model="selectedWorksheet">
-      <option v-for="item in worksheets" :value="item">{{ item }}</option>
-    </select>
-    <p>Ausgewähltes Element: {{ selectedWorksheet }}</p>
-  </div>
+    <SelectInput :options="worksheets" @worksheet-selected="selectedWorksheet = $event"/>
+    <p>Ausgewähltes Worksheet: {{ selectedWorksheet }}</p>
   </main>
 </template>
 
