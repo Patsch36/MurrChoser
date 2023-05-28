@@ -61,7 +61,7 @@ const handleFileSelect = (event: Event): void => {
     background-color: var(--color-background);
     font-size: .9rem;
     transform: translate(0rem, -1rem);
-    transition: transform .5s ease-in-out;
+    transition: transform .5s ease-in-out, font-size .5s ease-in-out;
 }
 
 .custom-file-input::-webkit-file-upload-button {
