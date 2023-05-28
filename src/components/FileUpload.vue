@@ -12,16 +12,16 @@ const props = defineProps<{
   headerText: String
 }>()
 
-const handleFileSelect = (event) => {
-    const input = event.target;
-    if (input.files && input.files.length > 0) {
+const handleFileSelect = (event: Event): void => {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
     // Eine Datei wurde ausgewählt
     input.classList.add('file-selected');
-    } else {
+  } else {
     // Keine Datei ausgewählt
     input.classList.remove('file-selected');
-    }
-}
+  }
+};
 
 </script>
 
