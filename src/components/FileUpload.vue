@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
         <!-- <p>Datei auswählen</p> -->
-        <input class="custom-file-input" type="file" :content="props.headerText" @change="handleFileSelect">
+        <input class="custom-file-input" type="file" :content="props.headerText" :accept ="props.type" @change="handleFileSelect">
     </div>
 </template>
 
@@ -10,6 +10,7 @@ import { defineProps, computed } from 'vue';
 
 const props = defineProps<{
   headerText: String
+  type: string
 }>()
 
 const handleFileSelect = (event: Event): void => {
@@ -22,6 +23,8 @@ const handleFileSelect = (event: Event): void => {
     input.classList.remove('file-selected');
   }
 };
+
+
 
 </script>
 
