@@ -58,6 +58,7 @@
   outline: none;
   white-space: nowrap;
   -webkit-user-select: none;
+  user-select: none;
   cursor: pointer;
   /* text-shadow: 1px 1px #fff; */
   font-weight: 700;
