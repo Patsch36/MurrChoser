@@ -1,9 +1,18 @@
 <template>
     <div class="wrapper">
         <!-- <p>Datei auswählen</p> -->
-        <input class="custom-file-input" type="file" title="Datei wählen">
+        <input class="custom-file-input" type="file" title="Datei wählen" :content="props.headerText">
     </div>
 </template>
+
+<script setup lang="ts">
+import { defineProps, computed } from 'vue';
+
+const props = defineProps<{
+  headerText: String
+}>()
+
+</script>
 
 <style>
 .wrapper{
@@ -32,7 +41,8 @@
 }
 
 .custom-file-input::after{
-    content: 'Datei auswählen';
+    /* content: 'Datei auswählen'; */
+    content: attr(content);
     position: absolute;
     display: block;
     background-color: var(--color-background);
