@@ -6,18 +6,47 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps<{
   headerText: String
   type: string
 }>()
 
-const handleFileSelect = (event: Event): void => {
+const emit = defineEmits(['file-selected']); // Event "file-selected" definieren
+
+const handleFileSelect = (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     // Eine Datei wurde ausgewählt
     input.classList.add('file-selected');
+    
+    const file = input.files[0];
+    
+    // Emit-Event mit dem Dateiobjekt als Payload
+    emit('file-selected', file);
+    // const file = input.files[0];
+    // const reader = new FileReader();
+
+    // reader.onload = () => {
+    //   const arrayBuffer = reader.result as ArrayBuffer;
+    //   const uint8Array = new Uint8Array(arrayBuffer);
+    //   const workbook = new Excel.Workbook();
+    //   workbook.xlsx.load(uint8Array).then(() => {
+    //     console.log('Datei eingelesen:', workbook);
+
+    //     worksheets = workbook.worksheets.map(elem => elem.name)
+
+    //     const worksheet = workbook.worksheets[0];
+
+    //     console.log(worksheet.getRow(10).values)
+    //   }).catch((error) => {
+    //     console.error('Fehler beim Einlesen der Datei:', error);
+    //   });
+    // };
+
+    // reader.readAsArrayBuffer(file);
+
   } else {
     // Keine Datei ausgewählt
     input.classList.remove('file-selected');
