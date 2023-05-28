@@ -29,7 +29,8 @@ header {
 header h1 {
   margin-block: auto;
   /* padding: 10px; */
-  font-size: 2.5rem;
+  font-size: 1.75rem;
+  transform: translate(-.4rem, .1rem);
 }
 
 .logo {
