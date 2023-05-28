@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
         <!-- <p>Datei auswählen</p> -->
-        <input class="custom-file-input" type="file" title="Datei wählen" :content="props.headerText">
+        <input class="custom-file-input" type="file" :content="props.headerText" @change="handleFileSelect">
     </div>
 </template>
 
@@ -11,6 +11,17 @@ import { defineProps, computed } from 'vue';
 const props = defineProps<{
   headerText: String
 }>()
+
+const handleFileSelect = (event) => {
+    const input = event.target;
+    if (input.files && input.files.length > 0) {
+    // Eine Datei wurde ausgewählt
+    input.classList.add('file-selected');
+    } else {
+    // Keine Datei ausgewählt
+    input.classList.remove('file-selected');
+    }
+}
 
 </script>
 
@@ -36,22 +47,18 @@ const props = defineProps<{
   border: 1px solid #999;
   border-radius: 3px;
   padding: 8px 10px;
-  /* position: relative; */
   isolation: isolate;
+  cursor: pointer;
 }
 
 .custom-file-input::after{
-    /* content: 'Datei auswählen'; */
     content: attr(content);
     position: absolute;
     display: block;
     background-color: var(--color-background);
-    font-size: .75rem;
-    /* background-color: steelblue; */
-    /* top: -10px;
-    left: 10px; */
-    /* z-index: 1; */
-    transform: translate(.25rem, -1.95rem);
+    font-size: .9rem;
+    transform: translate(0rem, -1rem);
+    transition: transform .5s ease-in-out;
 }
 
 .custom-file-input::-webkit-file-upload-button {
@@ -76,8 +83,13 @@ const props = defineProps<{
   margin-right: 10px;
   display: none;
 }
-.custom-file-input:hover::before {
+.custom-file-input:hover::after {
   border-color: transparent;
+}
+.custom-file-input.file-selected::after,
+.custom-file-input:hover::after {
+  transform: translate(.25rem, -1.95rem);
+  font-size: .75rem;
 }
 .custom-file-input:active::before {
   background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
