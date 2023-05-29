@@ -25,7 +25,7 @@ const workbookModeratoren = ref<Excel.Workbook>();
 const dateObj = ref<string>(new Date().toLocaleDateString('de-DE', dateOptions));
 const group = ref<string>('')
 const moderatoren = ref<Moderator[]>([])
-const filteredModeratoren = ref<string[]>()
+const bachelorModeratoren = ref<string[]>([])
 
 
 const handleFileSelected = (file: File) => {
@@ -176,17 +176,18 @@ function handleModeratorenlist (file: File) {
       console.log(moderators);
       moderatoren.value = countModerators(moderators)
 
-      // const keys = Object.keys(worksheet.getColumn(5).values);
-      // let bachelorStudents: string[] = []
-      // for(const key of keys){
-      //   const forname = worksheet.getCell(key, 2).value?.toString()
-      //   const name = worksheet.getCell(key, 1).value?.toString()
+      const keys = Object.keys(worksheet.getColumn(5).values);
+      for(const key of keys){
+        const forname = worksheet.getCell(key, 2).value?.toString()
+        const name = worksheet.getCell(key, 1).value?.toString()
 
-      //   if (forname === undefined || name === undefined)
-      //     continue
+        console.log(forname, name)
 
-      //   bachelorStudents.push(forname.concat(' ', name))
-      // }
+        if (forname === undefined || name === undefined)
+          continue
+
+        bachelorModeratoren.value.push(forname.concat(' ', name))
+      }
 
       // if(group === 'Bachelorstudenten auslassen')
       // moderatoren.value = moderatoren.value.filter(moderator => bachelorStudents.includes(moderator.moderator));
