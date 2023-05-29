@@ -8,7 +8,6 @@ import { type Moderatoren, type Moderator, getCellValue } from '@/types/Moderato
 import { countModerators } from "@/functions/dictionaryCounter";
 import Table from '@/components/Table.vue';
 import DateInput from '@/components/DateInput.vue';
-import type { TypesConfig } from 'vue-router';
 
 const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   
@@ -181,8 +180,6 @@ function handleModeratorenlist (file: File) {
         const forname = worksheet.getCell(key, 2).value?.toString()
         const name = worksheet.getCell(key, 1).value?.toString()
 
-        console.log(forname, name)
-
         if (forname === undefined || name === undefined)
           continue
 
@@ -226,6 +223,7 @@ const selectedOps = 1;
     <p>{{ dateObj }}</p>
     <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="group=$event"/>
     <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Moderator', 'Vorträge']" class="modtable"/>
+    <h2 v-if="getPeople.length">Verfügbare Personen</h2>
     <ol>
       <li v-for="name in getPeople" :key="name">{{ name }}</li>
     </ol>
