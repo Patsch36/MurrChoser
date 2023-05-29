@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import FileUpload from '@/components/FileUpload.vue'
-import { pushScopeId, ref } from 'vue';
+import { computed, pushScopeId, ref } from 'vue';
 import * as Excel from 'exceljs';
 import SelectInput from '@/components/SelectInput.vue';
+import {isHoliday} from 'feiertagejs'
 
 const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
@@ -10,7 +11,6 @@ const workbook = ref<Excel.Workbook>();
 const worksheets = ref<string[]>([]);
 const selectedWorksheet =  ref<string | null>(null);
 const dateObj = ref<Date>(new Date());
-const people = ref<string[]>([])
 
   
 const dateOptions: Intl.DateTimeFormatOptions = {
@@ -75,7 +75,8 @@ const getDate = () => {
   return date.toLocaleString('de-DE', dateOptions)
 }
 
-const getPeople = () => {
+const getPeople = computed(() => {
+  const people: string[] = [];
   const cellWithName = findCellWithParameter('Name')
   const cellWithForname = findCellWithParameter('Vorname')
 
@@ -83,11 +84,11 @@ const getPeople = () => {
   if (selectedWorksheet.value)
     worksheetname= selectedWorksheet.value;
   if (!workbook.value)
-    return null;
+    return [];
   const worksheet = workbook.value.getWorksheet(worksheetname);
 
   if (! cellWithName || !cellWithForname)
-    return;
+    return [];
 
   
   let cellWithDate: Excel.Cell = worksheet.getCell('A1')
@@ -98,15 +99,21 @@ const getPeople = () => {
   for (let index = 1; index <= cellCount; index++) {
     const text = rows.getCell(index).value?.toString()
     if (!text)
-      return
+      return [];
     const date = new Date(text)
+
+    const chosenDate = new Date(dateObj.value)
+
+    if (chosenDate.getDate() % 7 === 6 || chosenDate.getDate() % 7 === 0 || isHoliday(chosenDate, 'BW')){
+      return [];
+    }
+
     if (date.toLocaleString('de-DE', dateOptions) === getDate())
       cellWithDate = rows.getCell(index)
   }
 
 
   const columnName = worksheet.getColumn(cellWithName.col)
-  console.log(columnName.values.length)
   const startindex = parseInt(cellWithName.row)
 
   // const leastLength = Math.min(...[columbName.values.length, columnForname.values.length, columnDate.values.length])
@@ -119,11 +126,19 @@ const getPeople = () => {
       if (!forname || !name || forname === name)
         continue
 
-      console.log(forname.concat(' ', name))
-      people.value.push(forname.concat(' ', name))
+      people.push(forname.concat(' ', name))
     }
   }
-}
+  return people
+});
+
+
+
+// if (workbook.value !== undefined)
+// {
+//   let worksheet = workbook.value.getWorksheet(0)
+//   selectedWorksheet.value = worksheet.name
+// }
 </script>
 
 <template>
@@ -136,10 +151,11 @@ const getPeople = () => {
     <h2>Worksheets</h2>
     <SelectInput :options="worksheets" @worksheet-selected="selectedWorksheet = $event"/>
     <p>Ausgewähltes Worksheet: {{ selectedWorksheet }}</p>
-    <button v-if="workbook && selectedWorksheet" style="width:100px; height: 50px" @click="getPeople()">Fire</button>
     <input type="date" name="" id="" v-model="dateObj"  pattern="\d{2}.\d{2}.\d{4}">
     <p>{{ getDate() }}</p>
-    <p>{{people}}</p>
+    <ul>
+      <li v-for="name in getPeople" :key="name">{{ name }}</li>
+    </ul>
   </main>
 </template>
 
