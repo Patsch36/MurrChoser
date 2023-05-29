@@ -9,7 +9,6 @@ const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheet
 
 const workbook = ref<Excel.Workbook>();
 const worksheets = ref<string[]>([]);
-const selectedWorksheet =  ref<string | null>(null);
 const dateObj = ref<Date>(new Date());
 
   
@@ -27,12 +26,11 @@ const handleFileSelected = (file: File) => {
     const arrayBuffer = reader.result as ArrayBuffer;
     const uint8Array = new Uint8Array(arrayBuffer);
     workbook.value = new Excel.Workbook();
-    const wb = workbook.value;
-    wb.xlsx.load(uint8Array).then(() => {
-      console.log('Datei eingelesen:', workbook);
+    workbook.value.xlsx.load(uint8Array).then(() => {
+      console.log('Datei eingelesen:', workbook.value);
 
-      worksheets.value = wb.worksheets.map(elem => elem.name)
-      selectedWorksheet.value = worksheets.value[0]
+      // worksheets.value = wb.worksheets.map(elem => elem.name)
+      
     }).catch((error) => {
       console.error('Fehler beim Einlesen der Datei:', error);
     });
@@ -42,12 +40,10 @@ const handleFileSelected = (file: File) => {
 };
 
 
-function findCellWithParameter(parameter: string): Excel.Cell | null {
-  let worksheetname:string = ''
-  if (selectedWorksheet.value)
-    worksheetname= selectedWorksheet.value;
-  if (!workbook.value)
+function findCellWithParameter(parameter: string, worksheetname: string): Excel.Cell | null {
+  if (!workbook.value || workbook.value === undefined)
     return null;
+  
   const worksheet = workbook.value.getWorksheet(worksheetname);
 
   const numberOfRows = worksheet.rowCount
@@ -77,56 +73,58 @@ const getDate = () => {
 
 const getPeople = computed(() => {
   const people: string[] = [];
-  const cellWithName = findCellWithParameter('Name')
-  const cellWithForname = findCellWithParameter('Vorname')
-
-  let worksheetname:string = ''
-  if (selectedWorksheet.value)
-    worksheetname= selectedWorksheet.value;
+  if(workbook.value === undefined)
+    return [];
   if (!workbook.value)
     return [];
-  const worksheet = workbook.value.getWorksheet(worksheetname);
-
-  if (! cellWithName || !cellWithForname)
-    return [];
-
   
-  let cellWithDate: Excel.Cell = worksheet.getCell('A1')
-  const rowNumber = parseInt(cellWithName.row)
-  const rows = worksheet.getRow(rowNumber)
-  const cellCount = rows.cellCount
+  const worksheetnames = workbook.value.worksheets.map(elem => elem.name)
+  for (const worksheetname of worksheetnames)
+  {
 
-  for (let index = 1; index <= cellCount; index++) {
-    const text = rows.getCell(index).value?.toString()
-    if (!text)
+    const cellWithName = findCellWithParameter('Name', worksheetname)
+    const cellWithForname = findCellWithParameter('Vorname', worksheetname)
+
+    const worksheet = workbook.value.getWorksheet(worksheetname);
+
+    if (! cellWithName || !cellWithForname)
       return [];
-    const date = new Date(text)
-
+    
     const chosenDate = new Date(dateObj.value)
-
     if (chosenDate.getDate() % 7 === 6 || chosenDate.getDate() % 7 === 0 || isHoliday(chosenDate, 'BW')){
       return [];
     }
 
-    if (date.toLocaleString('de-DE', dateOptions) === getDate())
-      cellWithDate = rows.getCell(index)
-  }
+    let cellWithDate: Excel.Cell = worksheet.getCell('A1')
+    const rowNumber = parseInt(cellWithName.row)
+    const rows = worksheet.getRow(rowNumber)
+    const cellCount = rows.cellCount
 
+    for (let index = 1; index <= cellCount; index++) {
+      const text = rows.getCell(index).value?.toString()
+      if (!text)
+        return [];
+      const date = new Date(text)
 
-  const columnName = worksheet.getColumn(cellWithName.col)
-  const startindex = parseInt(cellWithName.row)
+      if (date.toLocaleString('de-DE', dateOptions) === getDate())
+        cellWithDate = rows.getCell(index)
+    }
 
-  // const leastLength = Math.min(...[columbName.values.length, columnForname.values.length, columnDate.values.length])
-  for (let index = startindex; index <= columnName.values.length; index ++){
-    if (worksheet.getCell(index, cellWithDate.col).value?.toString() === undefined){
-      
-      const forname = worksheet.getCell(index, cellWithForname.col).value?.toString()
-      const name = worksheet.getCell(index, cellWithName.col).value?.toString()
+    const columnName = worksheet.getColumn(cellWithName.col)
+    const startindex = parseInt(cellWithName.row)
 
-      if (!forname || !name || forname === name)
-        continue
+    // const leastLength = Math.min(...[columbName.values.length, columnForname.values.length, columnDate.values.length])
+    for (let index = startindex; index <= columnName.values.length; index ++){
+      if (worksheet.getCell(index, cellWithDate.col).value?.toString() === undefined){
+        
+        const forname = worksheet.getCell(index, cellWithForname.col).value?.toString()
+        const name = worksheet.getCell(index, cellWithName.col).value?.toString()
 
-      people.push(forname.concat(' ', name))
+        if (!forname || !name || forname === name)
+          continue
+
+        people.push(forname.concat(' ', name))
+      }
     }
   }
   return people
@@ -149,8 +147,8 @@ const getPeople = computed(() => {
       <FileUpload  headerText="Moderatorenplan auswählen" :type = "excelFileType" class="fileupload"/>
     </div>
     <h2>Worksheets</h2>
-    <SelectInput :options="worksheets" @worksheet-selected="selectedWorksheet = $event"/>
-    <p>Ausgewähltes Worksheet: {{ selectedWorksheet }}</p>
+    <!-- <SelectInput :options="worksheets" @worksheet-selected="selectedWorksheet = $event"/> -->
+    <!-- <p>Ausgewähltes Worksheet: {{ selectedWorksheet }}</p> -->
     <input type="date" name="" id="" v-model="dateObj"  pattern="\d{2}.\d{2}.\d{4}">
     <p>{{ getDate() }}</p>
     <ul>
