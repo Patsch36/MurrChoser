@@ -173,8 +173,8 @@ function handleModeratorenlist (file: File) {
       });
 
 
-      // console.log(moderators);
-      // moderatoren.value = countModerators(moderators)
+      console.log(moderators);
+      moderatoren.value = countModerators(moderators)
 
       // const keys = Object.keys(worksheet.getColumn(5).values);
       // let bachelorStudents: string[] = []
