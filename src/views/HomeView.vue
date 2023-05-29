@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import FileUpload from '@/components/FileUpload.vue'
-import { computed, pushScopeId, ref } from 'vue';
+import { computed, ref } from 'vue';
 import * as Excel from 'exceljs';
-import SelectInput from '@/components/SelectInput.vue';
 import {isHoliday} from 'feiertagejs'
+import RadioButtonInput from '@/components/RadioButtonInput.vue';
+import { type Moderator, getCellValue } from '@/types/Moderatorenliste';
+import Table from '@/components/Table.vue';
 
 const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
-const workbook = ref<Excel.Workbook>();
-const worksheets = ref<string[]>([]);
+const workbookAnwesenheit = ref<Excel.Workbook>();
+const workbookModeratoren = ref<Excel.Workbook>();
 const dateObj = ref<Date>(new Date());
+const group = ref<string>('')
+const moderatoren = ref<Moderator[]>([])
 
   
 const dateOptions: Intl.DateTimeFormatOptions = {
@@ -25,9 +29,9 @@ const handleFileSelected = (file: File) => {
   reader.onload = () => {
     const arrayBuffer = reader.result as ArrayBuffer;
     const uint8Array = new Uint8Array(arrayBuffer);
-    workbook.value = new Excel.Workbook();
-    workbook.value.xlsx.load(uint8Array).then(() => {
-      console.log('Datei eingelesen:', workbook.value);
+    workbookAnwesenheit.value = new Excel.Workbook();
+    workbookAnwesenheit.value.xlsx.load(uint8Array).then(() => {
+      console.log('Datei eingelesen:', workbookAnwesenheit.value);
 
       // worksheets.value = wb.worksheets.map(elem => elem.name)
       
@@ -41,10 +45,10 @@ const handleFileSelected = (file: File) => {
 
 
 function findCellWithParameter(parameter: string, worksheetname: string): Excel.Cell | null {
-  if (!workbook.value || workbook.value === undefined)
+  if (!workbookAnwesenheit.value || workbookAnwesenheit.value === undefined)
     return null;
   
-  const worksheet = workbook.value.getWorksheet(worksheetname);
+  const worksheet = workbookAnwesenheit.value.getWorksheet(worksheetname);
 
   const numberOfRows = worksheet.rowCount
   const rows = worksheet.getRows(0, numberOfRows) ?? [];
@@ -73,19 +77,19 @@ const getDate = () => {
 
 const getPeople = computed(() => {
   const people: string[] = [];
-  if(workbook.value === undefined)
+  if(workbookAnwesenheit.value === undefined)
     return [];
-  if (!workbook.value)
+  if (!workbookAnwesenheit.value)
     return [];
   
-  const worksheetnames = workbook.value.worksheets.map(elem => elem.name)
+  const worksheetnames = workbookAnwesenheit.value.worksheets.map(elem => elem.name)
   for (const worksheetname of worksheetnames)
   {
 
     const cellWithName = findCellWithParameter('Name', worksheetname)
     const cellWithForname = findCellWithParameter('Vorname', worksheetname)
 
-    const worksheet = workbook.value.getWorksheet(worksheetname);
+    const worksheet = workbookAnwesenheit.value.getWorksheet(worksheetname);
 
     if (! cellWithName || !cellWithForname)
       return [];
@@ -131,12 +135,51 @@ const getPeople = computed(() => {
 });
 
 
+function handleModeratorenlist (file: File) {
 
-// if (workbook.value !== undefined)
-// {
-//   let worksheet = workbook.value.getWorksheet(0)
-//   selectedWorksheet.value = worksheet.name
-// }
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    const arrayBuffer = reader.result as ArrayBuffer;
+    const uint8Array = new Uint8Array(arrayBuffer);
+    workbookModeratoren.value = new Excel.Workbook();
+    workbookModeratoren.value.xlsx.load(uint8Array).then(() => {
+      console.log('Datei eingelesen:', workbookModeratoren.value);
+
+      if (workbookModeratoren.value === undefined)
+        return;
+      
+      const worksheet = workbookModeratoren.value.getWorksheet(1);
+      const rows = worksheet.getRows(9, 17);
+
+      if (rows === undefined)
+        return;
+
+      const moderators: Moderator[] = rows.map((row) => {
+        const date = new Date(getCellValue(row, 7))
+        const datestring = date.toLocaleDateString('de-DE', dateOptions)
+        return {
+          date: datestring,
+          moderator1: getCellValue(row, 8),
+          moderator2: getCellValue(row, 9),
+        };
+      });
+
+
+      console.log(moderators);
+      moderatoren.value = moderators
+      
+    }).catch((error) => {
+      console.error('Fehler beim Einlesen der Datei:', error);
+    });
+  };
+
+  reader.readAsArrayBuffer(file);
+
+}
+
+const ops: string[] = ['Alle Azubis / Studenten', 'Bachelorstudenten auslassen']
+const selectedOps = 1;
 </script>
 
 <template>
@@ -144,16 +187,18 @@ const getPeople = computed(() => {
     <h2>Dateiauswahl</h2>
     <div class="file-inputs">
       <FileUpload headerText="Anwesenheitsplan auswählen" :type = "excelFileType" @file-selected="handleFileSelected" class="fileupload"/>
-      <FileUpload  headerText="Moderatorenplan auswählen" :type = "excelFileType" class="fileupload"/>
+      <FileUpload  headerText="Moderatorenplan auswählen" :type = "excelFileType" @file-selected="handleModeratorenlist" class="fileupload"/>
     </div>
     <h2>Worksheets</h2>
     <!-- <SelectInput :options="worksheets" @worksheet-selected="selectedWorksheet = $event"/> -->
     <!-- <p>Ausgewähltes Worksheet: {{ selectedWorksheet }}</p> -->
     <input type="date" name="" id="" v-model="dateObj"  pattern="\d{2}.\d{2}.\d{4}">
     <p>{{ getDate() }}</p>
-    <ul>
+    <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="group=$event"/>
+    <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Datum', 'Moderator 1', 'Moderator 2']" />
+    <ol>
       <li v-for="name in getPeople" :key="name">{{ name }}</li>
-    </ul>
+    </ol>
   </main>
 </template>
 
