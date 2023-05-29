@@ -4,23 +4,28 @@ import { computed, ref } from 'vue';
 import * as Excel from 'exceljs';
 import {isHoliday} from 'feiertagejs'
 import RadioButtonInput from '@/components/RadioButtonInput.vue';
-import { type Moderator, getCellValue } from '@/types/Moderatorenliste';
+import { type Moderatoren, type Moderator, getCellValue } from '@/types/Moderatorenliste';
+import { countModerators } from "@/functions/dictionaryCounter";
 import Table from '@/components/Table.vue';
+import DateInput from '@/components/DateInput.vue';
+import type { TypesConfig } from 'vue-router';
 
 const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  
+const dateOptions: Intl.DateTimeFormatOptions = {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric'
+};
+
+
 
 const workbookAnwesenheit = ref<Excel.Workbook>();
 const workbookModeratoren = ref<Excel.Workbook>();
-const dateObj = ref<Date>(new Date());
+const dateObj = ref<string>(new Date().toLocaleDateString('de-DE', dateOptions));
 const group = ref<string>('')
 const moderatoren = ref<Moderator[]>([])
-
-  
-const dateOptions: Intl.DateTimeFormatOptions = {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  };
+const filteredModeratoren = ref<string[]>()
 
 
 const handleFileSelected = (file: File) => {
@@ -70,10 +75,10 @@ function findCellWithParameter(parameter: string, worksheetname: string): Excel.
 }
 
 
-const getDate = () => {
-  const date = new Date(dateObj.value)
-  return date.toLocaleString('de-DE', dateOptions)
-}
+const newdate = (newdate: string) => {
+  const date = new Date(newdate)
+  dateObj.value = date.toLocaleString('de-DE', dateOptions)
+};
 
 const getPeople = computed(() => {
   const people: string[] = [];
@@ -94,7 +99,9 @@ const getPeople = computed(() => {
     if (! cellWithName || !cellWithForname)
       return [];
     
-    const chosenDate = new Date(dateObj.value)
+    const parts = dateObj.value.split('.');
+    const isoDateString = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    const chosenDate = new Date(isoDateString)
     if (chosenDate.getDate() % 7 === 6 || chosenDate.getDate() % 7 === 0 || isHoliday(chosenDate, 'BW')){
       return [];
     }
@@ -110,7 +117,7 @@ const getPeople = computed(() => {
         return [];
       const date = new Date(text)
 
-      if (date.toLocaleString('de-DE', dateOptions) === getDate())
+      if (date.toLocaleString('de-DE', dateOptions) === dateObj.value)
         cellWithDate = rows.getCell(index)
     }
 
@@ -155,7 +162,7 @@ function handleModeratorenlist (file: File) {
       if (rows === undefined)
         return;
 
-      const moderators: Moderator[] = rows.map((row) => {
+      const moderators: Moderatoren[] = rows.map((row) => {
         const date = new Date(getCellValue(row, 7))
         const datestring = date.toLocaleDateString('de-DE', dateOptions)
         return {
@@ -166,8 +173,24 @@ function handleModeratorenlist (file: File) {
       });
 
 
-      console.log(moderators);
-      moderatoren.value = moderators
+      // console.log(moderators);
+      // moderatoren.value = countModerators(moderators)
+
+      // const keys = Object.keys(worksheet.getColumn(5).values);
+      // let bachelorStudents: string[] = []
+      // for(const key of keys){
+      //   const forname = worksheet.getCell(key, 2).value?.toString()
+      //   const name = worksheet.getCell(key, 1).value?.toString()
+
+      //   if (forname === undefined || name === undefined)
+      //     continue
+
+      //   bachelorStudents.push(forname.concat(' ', name))
+      // }
+
+      // if(group === 'Bachelorstudenten auslassen')
+      // moderatoren.value = moderatoren.value.filter(moderator => bachelorStudents.includes(moderator.moderator));
+
       
     }).catch((error) => {
       console.error('Fehler beim Einlesen der Datei:', error);
@@ -177,6 +200,11 @@ function handleModeratorenlist (file: File) {
   reader.readAsArrayBuffer(file);
 
 }
+
+
+const highestMod = computed(() => {
+  return moderatoren.value.sort((a, b) => b.amount - a.amount)[0].amount
+})
 
 const ops: string[] = ['Alle Azubis / Studenten', 'Bachelorstudenten auslassen']
 const selectedOps = 1;
@@ -192,17 +220,18 @@ const selectedOps = 1;
     <h2>Worksheets</h2>
     <!-- <SelectInput :options="worksheets" @worksheet-selected="selectedWorksheet = $event"/> -->
     <!-- <p>Ausgewähltes Worksheet: {{ selectedWorksheet }}</p> -->
-    <input type="date" name="" id="" v-model="dateObj"  pattern="\d{2}.\d{2}.\d{4}">
-    <p>{{ getDate() }}</p>
+    <!-- <input type="date" name="" id="" v-model="dateObj"  pattern="\d{2}.\d{2}.\d{4}"> -->
+    <DateInput label="Azubirundentermin eingeben" @date-selected="newdate"/>
+    <p>{{ dateObj }}</p>
     <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="group=$event"/>
-    <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Datum', 'Moderator 1', 'Moderator 2']" />
+    <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Moderator', 'Vorträge']" class="modtable"/>
     <ol>
       <li v-for="name in getPeople" :key="name">{{ name }}</li>
     </ol>
   </main>
 </template>
 
-<style>
+<style scoped>
 main{
   margin-top: 16px;
 }
@@ -214,5 +243,10 @@ main{
 
 .fileupload{
   width: 45%;
+}
+
+.modtable {
+  width: 85%;
+  margin-inline: auto;
 }
 </style>

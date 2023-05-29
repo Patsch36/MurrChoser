@@ -28,7 +28,6 @@ import { defineProps } from 'vue';
   <style scoped>
 .fancy-table {
   border-collapse: collapse;
-  width: 100%;
 }
 
 .fancy-table thead th {
