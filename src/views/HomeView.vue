@@ -8,6 +8,7 @@ import { type Moderatoren, type Moderator, getCellValue } from '@/types/Moderato
 import { countModerators } from "@/functions/dictionaryCounter";
 import Table from '@/components/Table.vue';
 import DateInput from '@/components/DateInput.vue';
+import PresenterCard from '@/components/PresenterCard.vue';
 
 const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   
@@ -18,13 +19,18 @@ const dateOptions: Intl.DateTimeFormatOptions = {
 };
 
 
-
 const workbookAnwesenheit = ref<Excel.Workbook>();
 const workbookModeratoren = ref<Excel.Workbook>();
 const dateObj = ref<string>(new Date().toLocaleDateString('de-DE', dateOptions));
 const group = ref<string>('')
 const moderatoren = ref<Moderator[]>([])
 const bachelorModeratoren = ref<string[]>([])
+
+const ops: string[] = ['Alle Azubis / Studenten', 'Bachelorstudenten auslassen']
+const selectedOps = 1;
+
+const mod1 = ref<string>('')
+const mod2 = ref<string>('')
 
 
 const handleFileSelected = (file: File) => {
@@ -101,7 +107,8 @@ const getPeople = computed(() => {
     const parts = dateObj.value.split('.');
     const isoDateString = `${parts[2]}-${parts[1]}-${parts[0]}`;
     const chosenDate = new Date(isoDateString)
-    if (chosenDate.getDate() % 7 === 6 || chosenDate.getDate() % 7 === 0 || isHoliday(chosenDate, 'BW')){
+    console.log(chosenDate.getDay())
+    if (chosenDate.getDay() % 6 === 0 || isHoliday(chosenDate, 'BW')){
       return [];
     }
 
@@ -137,6 +144,10 @@ const getPeople = computed(() => {
       }
     }
   }
+  mod1.value = people[Math.floor(Math.random() * people.length)]
+  console.log(mod1.value)
+  mod2.value = people[Math.floor(Math.random() * people.length)]
+  console.log(mod2.value)
   return people
 });
 
@@ -203,13 +214,14 @@ function handleModeratorenlist (file: File) {
 const highestMod = computed(() => {
   return moderatoren.value.sort((a, b) => b.amount - a.amount)[0].amount
 })
-
-const ops: string[] = ['Alle Azubis / Studenten', 'Bachelorstudenten auslassen']
-const selectedOps = 1;
 </script>
 
 <template>
   <main>
+    <div class="presenters">
+      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(2.5)" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(5)" style="width: 47.5%; height: 75px"></PresenterCard>
+    </div>
     <h2>Dateiauswahl</h2>
     <div class="file-inputs">
       <FileUpload headerText="Anwesenheitsplan auswählen" :type = "excelFileType" @file-selected="handleFileSelected" class="fileupload"/>
@@ -239,14 +251,22 @@ const selectedOps = 1;
 main{
   margin-top: 16px;
 }
+
+.presenters{
+  display: flex;
+  flex-direction: row;
+  gap: 5%;
+  margin-bottom: 10px;
+}
+
 .file-inputs{
   display: flex;
   flex-direction: row;
-  gap: 10%;
+  gap: 5%;
 }
 
 .fileupload{
-  width: 45%;
+  width: 47.5%;
 }
 
 .modtable {
