@@ -43,6 +43,7 @@ const handleFileSelect = (event: Event) => {
     height: 50px;
     display: flex;
     justify-content: center;
+  position: relative;
 }
 
 /* .wrapper p {
