@@ -222,11 +222,16 @@ const selectedOps = 1;
     <DateInput label="Azubirundentermin eingeben" @date-selected="newdate"/>
     <p>{{ dateObj }}</p>
     <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="group=$event"/>
-    <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Moderator', 'Vorträge']" class="modtable"/>
-    <h2 v-if="getPeople.length">Verfügbare Personen</h2>
-    <ol>
-      <li v-for="name in getPeople" :key="name">{{ name }}</li>
-    </ol>
+    <div class="details">
+      <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Moderator', 'Vorträge']" class="modtable"/>
+      <div class="present-list">
+        <h2 v-if="getPeople.length">Verfügbare Personen</h2>
+        <ol>
+          <li v-for="name in getPeople" :key="name">{{ name }}</li>
+        </ol>
+      </div>
+    </div>
+    
   </main>
 </template>
 
@@ -248,4 +253,21 @@ main{
   width: 85%;
   margin-inline: auto;
 }
+
+@media (min-width: 1024px) {
+  .details{
+    display: flex;
+    flex-direction: row;
+    gap: 10%
+  }
+
+  .present-list{
+    width: 45%;
+  }
+
+  .modtable {
+    width: 45%;
+    margin: 0;
+  }
+} 
 </style>
