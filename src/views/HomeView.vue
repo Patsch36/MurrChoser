@@ -270,7 +270,9 @@ const filterPeople = computed(() => {
         <ol>
           <li v-for="name in getPeople" :key="name">{{ name }}</li>
         </ol>
-        <h2 style="margin-top: 20px; margin-bottom: 10px;">Bisherige Moderatoren</h2>
+      </div>
+      <div class="present-list">
+        <h2 v-if="moderatoren.length" class="modlistheader">Bisherige Moderatoren</h2>
         <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Moderator', 'Vorträge']" class="modtable"/>
       </div>
     </div>
@@ -305,20 +307,29 @@ main{
   margin-inline: auto;
 }
 
+.modlistheader {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
 @media (min-width: 1024px) {
   .details{
     display: flex;
     flex-direction: row;
-    gap: 10%
+    gap: 5%
   }
 
   .present-list{
-    width: 45%;
+    width: 100%;
   }
 
   .modtable {
-    width: 45%;
+    width: 100%;
     margin: 0;
+  }
+
+  .modlistheader {
+    margin-top: 0;
   }
 } 
 </style>
