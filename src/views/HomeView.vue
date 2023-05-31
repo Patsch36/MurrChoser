@@ -144,10 +144,6 @@ const getPeople = computed(() => {
       }
     }
   }
-  mod1.value = people[Math.floor(Math.random() * people.length)]
-  console.log(mod1.value)
-  mod2.value = people[Math.floor(Math.random() * people.length)]
-  console.log(mod2.value)
   return people
 });
 
@@ -214,6 +210,40 @@ function handleModeratorenlist (file: File) {
 const highestMod = computed(() => {
   return moderatoren.value.sort((a, b) => b.amount - a.amount)[0].amount
 })
+
+const filterPeople = computed(() => {
+  if (getPeople.value.length === 0 || moderatoren.value.length === 0)
+  return undefined
+
+  let filteredPeople = getPeople.value;
+  let moderatorNamen: string[] = moderatoren.value.map(moderator => moderator.moderator);
+
+  // Alle bachelorstudenten entfernen:
+  if (group.value === 'Bachelorstudenten auslassen')
+  filteredPeople = filteredPeople.filter(person => !bachelorModeratoren.value.some((_moderator: string) => _moderator === person));
+
+  // Alle bereits moderierten Namen entfernen
+  filteredPeople = filteredPeople.filter(person => !moderatorNamen.some((_moderator: string) => _moderator === person));
+
+  if (filteredPeople.length === 0)
+  {
+    for (let presentations = 2; presentations <= highestMod.value; presentations++)
+    {
+      const moderatorNamen: string[] = moderatoren.value.filter(moderator => moderator.amount < presentations).map(moderator => moderator.moderator);
+      filteredPeople = filteredPeople.filter(person => !moderatorNamen.some((_moderator: string) => _moderator === person));
+      if (filteredPeople.length > 0)
+        break;
+    }
+  }
+
+
+  mod1.value = filteredPeople[Math.floor(Math.random() * filteredPeople.length)]
+  console.log(mod1.value)
+  mod2.value = filteredPeople[Math.floor(Math.random() * filteredPeople.length)]
+  console.log(mod2.value)
+
+  return filteredPeople
+})
 </script>
 
 <template>
@@ -228,12 +258,12 @@ const highestMod = computed(() => {
       <FileUpload  headerText="Moderatorenplan auswählen" :type = "excelFileType" @file-selected="handleModeratorenlist" class="fileupload"/>
     </div>
     <h2>Worksheets</h2>
-    <!-- <SelectInput :options="worksheets" @worksheet-selected="selectedWorksheet = $event"/> -->
-    <!-- <p>Ausgewähltes Worksheet: {{ selectedWorksheet }}</p> -->
-    <!-- <input type="date" name="" id="" v-model="dateObj"  pattern="\d{2}.\d{2}.\d{4}"> -->
     <DateInput label="Azubirundentermin eingeben" @date-selected="newdate"/>
     <p>{{ dateObj }}</p>
     <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="group=$event"/>
+    
+    <p>{{ filterPeople }}</p>
+    
     <div class="details">
       <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Moderator', 'Vorträge']" class="modtable"/>
       <div class="present-list">
