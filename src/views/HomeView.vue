@@ -262,15 +262,16 @@ const filterPeople = computed(() => {
     <p>{{ dateObj }}</p>
     <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="group=$event"/>
     
-    <p>{{ filterPeople }}</p>
+    <p v-show="false">{{ filterPeople }}</p>
     
     <div class="details">
-      <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Moderator', 'Vorträge']" class="modtable"/>
       <div class="present-list">
         <h2 v-if="getPeople.length">Verfügbare Personen</h2>
         <ol>
           <li v-for="name in getPeople" :key="name">{{ name }}</li>
         </ol>
+        <h2 style="margin-top: 20px; margin-bottom: 10px;">Bisherige Moderatoren</h2>
+        <Table v-if="moderatoren.length" :data="moderatoren" :headers="['Moderator', 'Vorträge']" class="modtable"/>
       </div>
     </div>
     
