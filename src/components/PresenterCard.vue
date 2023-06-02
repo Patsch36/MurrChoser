@@ -1,24 +1,45 @@
 <template>
-    <div class="presenter-card" :title="props.title">
+    <div class="presenter-card" :title="props.title" @click="openContextMenu">
         <div>
             <p>{{ text }}</p>
         </div>
+        
+        <context-menu
+      :menu-items="mods"
+      v-show="isContextMenuOpen"
+      :style="{ top: `${contextMenuTop}px`, left: `${contextMenuLeft}px` }"
+      @close="closeContextMenu"
+      @menu-click="handleMenuItemClick"
+    ></context-menu>
+    
     </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, ref, watch } from 'vue';
+import ContextMenu from './ContextMenu.vue';
+
+
+const isContextMenuOpen = ref(false);
+const contextMenuLeft = ref(0);
+const contextMenuTop = ref(0);
+
 
 const props = defineProps<{
   title: string,
   text: any,
-  seconds?: number
+  seconds?: number,
+  mods: string[]
 }>()
 
 const text = ref<string>();
 let counter = 0;
 
+let weirdflag = false;
 
+props.mods.sort(function (l,u) {
+    return l.toLowerCase().localeCompare(u.toLowerCase());
+})
 
 function replaceWithRandomLetters(input: string): string {
   const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -69,6 +90,30 @@ watch(() => props.text, (newText:any) => {
         fireAnimation(limit)
     }
 });
+
+
+const openContextMenu = (event: MouseEvent) => {
+  event.preventDefault();
+  weirdflag = !weirdflag;
+  if (!isContextMenuOpen.value && weirdflag)
+  {
+    isContextMenuOpen.value = true;
+    contextMenuTop.value = event.clientY;
+    contextMenuLeft.value = event.clientX;
+  }
+};
+
+const closeContextMenu = () => {
+  if (isContextMenuOpen.value){
+    isContextMenuOpen.value = false;
+  }
+};
+
+const handleMenuItemClick = (item: string) => {
+//   console.log(`Clicked on ${item}`);
+    text.value = item;
+  closeContextMenu();
+};
 </script>
 
 <style scoped>

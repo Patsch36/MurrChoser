@@ -50,3 +50,7 @@ npm run lint
 - [ ] Advanced Generation Options for mods (Choose between amounts of moderations already)
 
 - [ ] Refactor malchosen computed Property FilerPeople to watch
+
+- [ ] Auswahl ändern
+
+- [ ] Frischlinge bis Januar auslassen

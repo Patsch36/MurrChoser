@@ -213,7 +213,7 @@ const highestMod = computed(() => {
 
 const filterPeople = computed(() => {
   if (getPeople.value.length === 0 || moderatoren.value.length === 0)
-  return undefined
+  return [];
 
   let filteredPeople = getPeople.value;
   let moderatorNamen: string[] = moderatoren.value.map(moderator => moderator.moderator);
@@ -249,8 +249,8 @@ const filterPeople = computed(() => {
 <template>
   <main>
     <div class="presenters">
-      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(2.5)" style="width: 47.5%; height: 75px"></PresenterCard>
-      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(5)" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(0)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(0)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
     </div>
     <h2>Dateiauswahl</h2>
     <div class="file-inputs">
@@ -262,7 +262,7 @@ const filterPeople = computed(() => {
     <p>{{ dateObj }}</p>
     <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="group=$event"/>
     
-    <p v-show="false">{{ filterPeople }}</p>
+    <p v-show="false">{{ filterPeople.length }}</p>
     
     <div class="details">
       <div class="present-list">
