@@ -5,7 +5,7 @@
         </div>
         
         <context-menu
-      :menu-items="mods"
+      :menu-items="mods.sort()"
       v-show="isContextMenuOpen"
       :style="{ top: `${contextMenuTop}px`, left: `${contextMenuLeft}px` }"
       @close="closeContextMenu"
@@ -37,9 +37,6 @@ let counter = 0;
 
 let weirdflag = false;
 
-props.mods.sort(function (l,u) {
-    return l.toLowerCase().localeCompare(u.toLowerCase());
-})
 
 function replaceWithRandomLetters(input: string): string {
   const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -95,15 +92,17 @@ watch(() => props.text, (newText:any) => {
 const openContextMenu = (event: MouseEvent) => {
   event.preventDefault();
   weirdflag = !weirdflag;
+
   if (!isContextMenuOpen.value && weirdflag)
   {
     isContextMenuOpen.value = true;
-    contextMenuTop.value = event.clientY;
-    contextMenuLeft.value = event.clientX;
+    contextMenuTop.value = event.clientY + 150 > window.innerHeight ? event.clientY - 150 : event.clientY;
+    contextMenuLeft.value = event.clientX + 150 > window.innerWidth ? event.clientX - 150 : event.clientX;
   }
 };
 
 const closeContextMenu = () => {
+    console.log("CLOOOOSE!!")
   if (isContextMenuOpen.value){
     isContextMenuOpen.value = false;
   }

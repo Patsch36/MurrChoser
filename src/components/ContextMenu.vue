@@ -50,8 +50,9 @@ const menuItemClicked = (item: string) => {
 
 ul {
   list-style: none;
-  padding: 0;
+  padding:0;
   margin: 0;
+  margin-top: 50px;
 }
 
 li {
