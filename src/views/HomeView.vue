@@ -9,6 +9,7 @@ import { countModerators } from "@/functions/dictionaryCounter";
 import Table from '@/components/Table.vue';
 import DateInput from '@/components/DateInput.vue';
 import PresenterCard from '@/components/PresenterCard.vue';
+import NumbersInput from '@/components/NumbersInput.vue';
 
 const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   
@@ -22,9 +23,10 @@ const dateOptions: Intl.DateTimeFormatOptions = {
 const workbookAnwesenheit = ref<Excel.Workbook>();
 const workbookModeratoren = ref<Excel.Workbook>();
 const dateObj = ref<string>(new Date().toLocaleDateString('de-DE', dateOptions));
-const group = ref<string>('')
-const moderatoren = ref<Moderator[]>([])
-const bachelorModeratoren = ref<string[]>([])
+const group = ref<string>('');
+const moderatoren = ref<Moderator[]>([]);
+const bachelorModeratoren = ref<string[]>([]);
+const prepareTime = ref<number>(14);
 
 const ops: string[] = ['Alle Azubis / Studenten', 'Bachelorstudenten auslassen']
 const selectedOps = 1;
@@ -248,6 +250,7 @@ const filterPeople = computed(() => {
 
 <template>
   <main>
+    <h2 style="margin-bottom: 6px;">Moderatoren</h2>
     <div class="presenters">
       <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(0)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
       <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(0)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
@@ -257,9 +260,12 @@ const filterPeople = computed(() => {
       <FileUpload headerText="Anwesenheitsplan auswählen" :type = "excelFileType" @file-selected="handleFileSelected" class="fileupload"/>
       <FileUpload  headerText="Moderatorenplan auswählen" :type = "excelFileType" @file-selected="handleModeratorenlist" class="fileupload"/>
     </div>
-    <h2>Worksheets</h2>
+    <h2>Termin</h2>
     <DateInput label="Azubirundentermin eingeben" @date-selected="newdate"/>
-    <p>{{ dateObj }}</p>
+    <!-- <p>{{ dateObj }}</p> -->
+    <h2>Vorbereitungszeit</h2>
+    <NumbersInput :value="prepareTime" @number-selected="prepareTime=$event"/>
+    <h2>Gruppeneinschränkungen</h2>
     <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="group=$event"/>
     
     <p v-show="false">{{ filterPeople.length }}</p>
