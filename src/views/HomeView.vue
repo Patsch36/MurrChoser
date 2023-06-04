@@ -313,6 +313,10 @@ main{
 }
 
 @media (min-width: 1024px) {
+
+  main {
+    margin-block: 64px;
+  }
   .details{
     display: flex;
     flex-direction: row;
