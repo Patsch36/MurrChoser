@@ -54,3 +54,5 @@ npm run lint
 - [ ] Auswahl ändern
 
 - [ ] Frischlinge bis Januar auslassen
+
+- [ ] MIT Lizenzen in Footer einfügen
