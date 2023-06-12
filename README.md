@@ -1,3 +1,4 @@
+![MurrChoserLogo](https://github.com/Patsch36/MurrChoser/assets/74180467/3a3355f4-7c16-4888-953d-9398e0e6d136)
 # MurrChooser
 
 A Tool based based on VueJS and Typescript for checking present trainees at certain team meetings and check choose suitable presenters.
