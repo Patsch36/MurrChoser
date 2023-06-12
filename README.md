@@ -1,6 +1,6 @@
 # MurrChooser
 
-This template should help get you started developing with Vue 3 in Vite.
+A Tool based based on VueJS and Typescript for checking present trainees at certain team meetings and check choose suitable presenters.
 
 ## Recommended IDE Setup
 
