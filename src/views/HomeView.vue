@@ -268,8 +268,8 @@ const filterPeople = computed(() => {
   <main>
     <h2 style="margin-bottom: 6px;">Moderatoren</h2>
     <div class="presenters">
-      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(0.5)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
-      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(0.5)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(2.5)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(5)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
     </div>
     <h2>Dateiauswahl</h2>
     <div class="file-inputs">
