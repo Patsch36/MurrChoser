@@ -227,19 +227,35 @@ const filterPeople = computed(() => {
   // Alle bereits moderierten Namen entfernen
   filteredPeople = filteredPeople.filter(person => !moderatorNamen.some((_moderator: string) => _moderator === person));
 
-  if (filteredPeople.length === 0)
+  // Only one flag so it's sure this last person gets chosen
+  let only_one = ''
+  if (filteredPeople.length < 2)
   {
+    if (filteredPeople.length === 1)
+      only_one = filteredPeople[0]
+
+
     for (let presentations = 2; presentations <= highestMod.value; presentations++)
     {
       const moderatorNamen: string[] = moderatoren.value.filter(moderator => moderator.amount < presentations).map(moderator => moderator.moderator);
-      filteredPeople = filteredPeople.filter(person => !moderatorNamen.some((_moderator: string) => _moderator === person));
-      if (filteredPeople.length > 0)
+      // filteredPeople = filteredPeople.filter(person => !moderatorNamen.some((_moderator: string) => _moderator === person));
+      filteredPeople = filteredPeople.concat(moderatorNamen)
+      if (filteredPeople.length > 1)
         break;
     }
   }
 
+  if (only_one !== '')
+  {
+    mod1.value = only_one
+    filteredPeople.splice(filteredPeople.findIndex(person => person === only_one), 1)
+  } else
+  {
+    const index1 = Math.floor(Math.random() * filteredPeople.length);
+    mod1.value = filteredPeople[index1]
+    filteredPeople.splice(index1)
+  }
 
-  mod1.value = filteredPeople[Math.floor(Math.random() * filteredPeople.length)]
   console.log(mod1.value)
   mod2.value = filteredPeople[Math.floor(Math.random() * filteredPeople.length)]
   console.log(mod2.value)
@@ -252,8 +268,8 @@ const filterPeople = computed(() => {
   <main>
     <h2 style="margin-bottom: 6px;">Moderatoren</h2>
     <div class="presenters">
-      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(0)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
-      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(0)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(0.5)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(0.5)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
     </div>
     <h2>Dateiauswahl</h2>
     <div class="file-inputs">
