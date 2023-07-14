@@ -38,8 +38,6 @@ const emit = defineEmits(['text']);
 const text = ref<string>();
 let counter = 0;
 
-let weirdflag = false;
-
 
 function replaceWithRandomLetters(input: string): string {
   const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -96,9 +94,8 @@ watch(() => props.text, (newText:any) => {
 
 const openContextMenu = (event: MouseEvent) => {
   event.preventDefault();
-  weirdflag = !weirdflag;
 
-  if (!isContextMenuOpen.value && weirdflag)
+  if (!isContextMenuOpen.value)
   {
     isContextMenuOpen.value = true;
     contextMenuTop.value = event.clientY + 150 > window.innerHeight ? event.clientY - 150 : event.clientY;
