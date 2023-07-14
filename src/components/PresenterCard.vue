@@ -38,7 +38,6 @@ const emit = defineEmits(['text']);
 const text = ref<string>();
 let counter = 0;
 
-
 function replaceWithRandomLetters(input: string): string {
   const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let result = '';
@@ -100,6 +99,8 @@ const openContextMenu = (event: MouseEvent) => {
     isContextMenuOpen.value = true;
     contextMenuTop.value = event.clientY + 150 > window.innerHeight ? event.clientY - 150 : event.clientY;
     contextMenuLeft.value = event.clientX + 150 > window.innerWidth ? event.clientX - 150 : event.clientX;
+  } else {
+    closeContextMenu();
   }
 };
 
@@ -110,11 +111,7 @@ const closeContextMenu = () => {
 };
 
 const handleMenuItemClick = (item: string) => {
-//   console.log(`Clicked on ${item}`);
   text.value = item;
-  closeContextMenu();
-
-  // emit text to parent
   emit('text', item)
 };
 </script>

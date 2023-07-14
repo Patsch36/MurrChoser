@@ -1,7 +1,7 @@
 <template>
-  <div class="context-menu" :style="`top: data.top + 'px'; left: data.left + 'px'`" ref="context" tabindex="0" @blur="close">
+  <div class="context-menu" :style="`top: data.top + 'px'; left: data.left + 'px'`" ref="context" tabindex="0">
     <ul>
-      <li v-for="(menuitem, index) in props.menuItems" :key="index" @click="menuItemClicked(menuitem)">{{ menuitem }}</li>
+      <li v-for="(menuitem, index) in props.menuItems" :key="index" @click.stop="menuItemClicked(menuitem)">{{ menuitem }}</li>
     </ul>
   </div>
 </template>
@@ -24,15 +24,13 @@ const close = () => {
 
 const menuItemClicked = (item: string) => {
   emit('menu-click', item);
+  close();
 };
 
 const handleClickOutsideOfContextMenu = (event: MouseEvent) => {
-  const contextMenu = document.querySelector('.context-menu');
-  console.log(event)
-  if (contextMenu && (!between(event.y, props.top, props.top + 300) || !between(event.x, props.left, props.left+150))) {
+  if (!between(event.y, props.top, props.top + 300) || !between(event.x, props.left, props.left+150)) {
     close();
   }
-
 };
 
 function between(x: Number, min:Number, max:Number) {
