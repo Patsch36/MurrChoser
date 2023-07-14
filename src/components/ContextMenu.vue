@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineEmits } from 'vue';
+import { ref, onMounted, onUnmounted} from 'vue';
 
 const props = defineProps<{
   menuItems: string[]
@@ -15,22 +15,12 @@ const props = defineProps<{
 
 const emit = defineEmits(['close', 'menu-click']);
 
-// const data = reactive({
-//   left: 0,
-//   top: 0,
-//   show: false,
-// });
 
 const close = () => {
-  // data.show = false;
-  // data.left = 0;
-  // data.top = 0;
   emit('close');
 };
 
 const menuItemClicked = (item: string) => {
-  // close();
-  // console.log(data.show, item)
   emit('menu-click', item);
 };
 </script>

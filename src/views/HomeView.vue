@@ -245,6 +245,8 @@ const filterPeople = computed(() => {
     }
   }
 
+  const returnlist = filteredPeople.slice()
+
   if (only_one !== '')
   {
     mod1.value = only_one
@@ -256,11 +258,9 @@ const filterPeople = computed(() => {
     filteredPeople.splice(index1)
   }
 
-  console.log(mod1.value)
   mod2.value = filteredPeople[Math.floor(Math.random() * filteredPeople.length)]
-  console.log(mod2.value)
 
-  return filteredPeople
+  return returnlist;
 })
 </script>
 
@@ -268,8 +268,8 @@ const filterPeople = computed(() => {
   <main>
     <h2 style="margin-bottom: 6px;">Moderatoren</h2>
     <div class="presenters">
-      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(2.5)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
-      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(5)" :mods="filterPeople" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(2.5)" :mods="filterPeople" @text="mod1 = $event" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(5.0)" :mods="filterPeople" @text="mod2 = $event" style="width: 47.5%; height: 75px"></PresenterCard>
     </div>
     <h2>Dateiauswahl</h2>
     <div class="file-inputs">
