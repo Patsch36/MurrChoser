@@ -16,7 +16,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['close', 'menu-click']);
-let shouldClose = false;
 
 
 const close = () => {
@@ -29,15 +28,14 @@ const menuItemClicked = (item: string) => {
 
 const handleClickOutsideOfContextMenu = (event: MouseEvent) => {
   const contextMenu = document.querySelector('.context-menu');
-  shouldClose != shouldClose
   console.log(event)
-  if (contextMenu && (!between(event.y, props.top, props.top + 300) || !between(event.x, props.left, props.left+150)) && !shouldClose) {
+  if (contextMenu && (!between(event.y, props.top, props.top + 300) || !between(event.x, props.left, props.left+150))) {
     close();
   }
 
 };
 
-function between(x, min:Number, max:Number) {
+function between(x: Number, min:Number, max:Number) {
   return x >= min && x <= max;
 }
   
