@@ -262,14 +262,19 @@ const filterPeople = computed(() => {
 
   return returnlist;
 })
+
+// compute list of people that are in filtered people but is not mod
+const modlistForMod =  (mods: string[]) => {
+  return filterPeople.value.filter(person => !mods.includes(person));
+}
 </script>
 
 <template>
   <main>
     <h2 style="margin-bottom: 6px;">Moderatoren</h2>
     <div class="presenters">
-      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(2.5)" :mods="filterPeople" @text="mod1 = $event" style="width: 47.5%; height: 75px"></PresenterCard>
-      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(5.0)" :mods="filterPeople" @text="mod2 = $event" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 1" :text="mod1" :seconds="Number(2.5)" :mods="modlistForMod([mod1, mod2])" @text="mod1 = $event" style="width: 47.5%; height: 75px"></PresenterCard>
+      <PresenterCard title="Moderator 2" :text="mod2" :seconds="Number(5.0)" :mods="modlistForMod([mod1, mod2])" @text="mod2 = $event" style="width: 47.5%; height: 75px"></PresenterCard>
     </div>
     <h2>Dateiauswahl</h2>
     <div class="file-inputs">
