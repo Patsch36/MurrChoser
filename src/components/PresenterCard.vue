@@ -8,6 +8,7 @@
       :menu-items="mods.sort()"
       v-show="isContextMenuOpen"
       :style="{ top: `${contextMenuTop}px`, left: `${contextMenuLeft}px` }"
+      :top="contextMenuTop" :left="contextMenuLeft"
       @close="closeContextMenu"
       @menu-click="handleMenuItemClick"
     ></context-menu>
