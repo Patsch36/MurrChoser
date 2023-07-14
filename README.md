@@ -57,3 +57,5 @@ npm run lint
 - [ ] Frischlinge bis Januar auslassen
 
 - [ ] MIT Lizenzen in Footer einfügen
+
+- [ ] CSS-Breiten und Höhen mit min-width/height: absoluten wert, width/height: relativen Wert darstellen
