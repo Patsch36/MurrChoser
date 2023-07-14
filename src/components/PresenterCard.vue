@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import ContextMenu from './ContextMenu.vue';
 
 
@@ -31,6 +31,8 @@ const props = defineProps<{
   seconds?: number,
   mods: string[]
 }>()
+
+const emit = defineEmits(['text']);
 
 const text = ref<string>();
 let counter = 0;
@@ -76,10 +78,12 @@ const fireAnimation = (limit: number) => {
 }
 
 watch(() => props.text, (newText:any) => {
+    counter = 0;
+
+    // console.log("Presentercard", props.mods)
+
     if (newText !== undefined) {
         let limit = 30;
-
-        counter = 0;
 
         if (props.seconds)
             limit = props.seconds * 20;
@@ -102,7 +106,6 @@ const openContextMenu = (event: MouseEvent) => {
 };
 
 const closeContextMenu = () => {
-    console.log("CLOOOOSE!!")
   if (isContextMenuOpen.value){
     isContextMenuOpen.value = false;
   }
@@ -110,8 +113,11 @@ const closeContextMenu = () => {
 
 const handleMenuItemClick = (item: string) => {
 //   console.log(`Clicked on ${item}`);
-    text.value = item;
+  text.value = item;
   closeContextMenu();
+
+  // emit text to parent
+  emit('text', item)
 };
 </script>
 
