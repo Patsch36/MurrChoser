@@ -83,19 +83,23 @@ nav a:first-of-type {
 @media (min-width: 1100px) {
   header {
     max-width: 40vw;
-    min-height: 100vh;
+    min-height: 100vh !important;
     display: flex;
+    align-self: start;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
-    margin-block: auto;
-    padding-block: 35%;
+    /* padding-block: 35%; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   header h1 {
     display: none;
+    margin: 0;
   }
 
   .logo {
