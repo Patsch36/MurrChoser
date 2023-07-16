@@ -1,5 +1,5 @@
 <template>
-    <div class="presenter-card" :title="props.title" @click="openContextMenu">
+    <div class="presenter-card" :class="{clickable: clickable}" :title="props.title" @click="openContextMenu">
         <div>
             <p>{{ text }}</p>
         </div>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref, vModelSelect, watch } from 'vue';
 import ContextMenu from './ContextMenu.vue';
 
 
@@ -37,6 +37,16 @@ const emit = defineEmits(['text']);
 
 const text = ref<string>();
 let counter = 0;
+
+let clickable = false;
+
+onMounted(() => {
+  clickable = props.mods.length > 0
+
+  watch(() => props.mods.length, () => {
+    clickable = props.mods.length > 0
+  });
+})
 
 function replaceWithRandomLetters(input: string): string {
   const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -121,6 +131,10 @@ const handleMenuItemClick = (item: string) => {
     border: 1px solid var(--color-border-light);
     border-radius: 3px;
     position: relative;
+}
+
+.clickable{
+  cursor: pointer;
 }
 
 .presenter-card::after {
