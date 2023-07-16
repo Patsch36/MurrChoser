@@ -92,7 +92,7 @@ main{
   margin-bottom: 10px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
 
   main {
     margin-block: 64px;
