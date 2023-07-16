@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
+import { watch, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps<{
   menuItems: string[],
@@ -16,6 +16,23 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['close', 'menu-click']);
+
+onMounted(() => {
+  const contextMenu = document.querySelector('.context-menu');
+  if (props.menuItems.length === 0) {
+    contextMenu?.classList.add('hide');
+  } else {
+    contextMenu?.classList.remove('hide');
+  }
+
+  watch(() => props.menuItems.length, () => {
+    if (props.menuItems.length === 0) {
+      contextMenu?.classList.add('hide');
+    } else {
+      contextMenu?.classList.remove('hide');
+    }
+  });
+})
 
 
 const close = () => {
@@ -60,6 +77,10 @@ onUnmounted(() => {
   outline: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   cursor: pointer;
+}
+
+.hide{
+  display: none !important;
 }
 
 ul {
