@@ -1,4 +1,8 @@
 <script setup lang="ts">
+
+// TODO: Add a way to select the amount of time a presenter has to prepare
+// TODO: Figure out how to make handler reactive and without ref-variables
+
 import FileUpload from '@/components/FileUpload.vue'
 import { ref } from 'vue';
 import RadioButtonInput from '@/components/RadioButtonInput.vue';
