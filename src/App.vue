@@ -28,7 +28,6 @@ header {
 
 header h1 {
   margin-block: auto;
-  /* padding: 10px; */
   font-size: 1.75rem;
   transform: translate(-.4rem, .1rem);
 }
@@ -81,19 +80,18 @@ nav a:first-of-type {
   border: 0;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   header {
     max-width: 40vw;
-    height: 700px;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
-    margin-bottom: auto;
-    margin-top: 50%;
-    /* transform: translateY(400px); */
+    margin-block: auto;
+    padding-block: 35%;
   }
 
   header h1 {
@@ -101,10 +99,10 @@ nav a:first-of-type {
   }
 
   .logo {
-    max-height: max-content;
-    height: 400px;
-    width: 400px;
-    /* margin: 0 2rem 0 0; */
+    --size: 20vw;
+    aspect-ratio: 1/1 !important;
+    width: var(--size);
+    min-height: var(--size);
   }
 
   header .wrapper {
@@ -129,9 +127,6 @@ nav a:first-of-type {
     display: flex;
     justify-content: center;
     align-items: center;
-
-    /* padding: 1rem 0; */
-    /* margin-top: 1rem; */
   }
 }
 </style>
