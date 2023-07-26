@@ -5,7 +5,7 @@
         </div>
         
         <context-menu
-      :menu-items="mods.sort()"
+      :menu-items="mods.concat(['Zufälliger Name']).sort()"
       v-show="isContextMenuOpen"
       :style="{ top: `${contextMenuTop}px`, left: `${contextMenuLeft}px` }"
       :top="contextMenuTop" :left="contextMenuLeft"
@@ -121,6 +121,8 @@ const closeContextMenu = () => {
 };
 
 const handleMenuItemClick = (item: string) => {
+  if (item === 'Zufälliger Name')
+    item = props.mods[Math.floor(Math.random() * props.mods.length)];
   text.value = item;
   emit('text', item)
 };
