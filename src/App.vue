@@ -35,7 +35,6 @@ header h1 {
 .logo {
   display: block;
   padding: 10px;
-  /* width: 64px; */
   max-height: inherit;
 }
 
@@ -91,7 +90,6 @@ nav a:first-of-type {
     flex-direction: column;
     place-items: center;
     padding-right: calc(var(--section-gap) / 2);
-    /* padding-block: 35%; */
     display: flex;
     justify-content: center;
     align-items: center;
