@@ -11,6 +11,7 @@
       :top="contextMenuTop" :left="contextMenuLeft"
       @close="closeContextMenu"
       @menu-click="handleMenuItemClick"
+      :minItems="2"
     ></context-menu>
     
     </div>

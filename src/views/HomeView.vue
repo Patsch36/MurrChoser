@@ -36,7 +36,7 @@ const handler = new DataHandler();
     </div>
     <h2>Termin</h2>
     <DateInput label="Azubirundentermin eingeben" @date-selected="handler.newdate"/>
-    <p>{{ handler.dateObj }}</p>
+    <!-- <p>{{ handler.dateObj }}</p> -->
     <h2>Vorbereitungszeit</h2>
     <NumbersInput :value="prepareTime" @number-selected="prepareTime=$event"/>
     <h2>Gruppeneinschränkungen</h2>

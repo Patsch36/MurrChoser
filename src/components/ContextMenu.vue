@@ -11,22 +11,26 @@ import { watch, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps<{
   menuItems: string[],
+  minItems?: number,
   top: number,
   left: number
 }>();
+
+let leastItems = props.minItems || 1;
+console.log(leastItems)
 
 const emit = defineEmits(['close', 'menu-click']);
 
 onMounted(() => {
   const contextMenu = document.querySelector('.context-menu');
-  if (props.menuItems.length === 0) {
+  if (props.menuItems.length < leastItems) {
     contextMenu?.classList.add('hide');
   } else {
     contextMenu?.classList.remove('hide');
   }
 
   watch(() => props.menuItems.length, () => {
-    if (props.menuItems.length === 0) {
+    if (props.menuItems.length  < leastItems) {
       contextMenu?.classList.add('hide');
     } else {
       contextMenu?.classList.remove('hide');
