@@ -22,6 +22,9 @@ export default class DataHandler {
   public dateObj = ref<string>(new Date().toLocaleDateString('de-DE', DataHandler.dateOptions))
   public group = ref<string>('')
 
+  public prepareTime = ref<number>(14);
+  public missesInPrepareTime = ref<number>(5);
+
   public handleFileSelected = (file: File) => {
     const reader = new FileReader()
 
@@ -162,7 +165,6 @@ export default class DataHandler {
 
   public newdate = (newdate: string) => {
     const date = new Date(newdate)
-    console.log(date)
     this.dateObj.value = date.toLocaleString('de-DE', DataHandler.dateOptions)
   }
 
@@ -188,6 +190,9 @@ export default class DataHandler {
     filteredPeople = filteredPeople.filter(
       (person) => !moderatorNamen.some((_moderator: string) => _moderator === person)
     )
+    
+    filteredPeople = this.filterPeopleNotAvailableForPreparation(filteredPeople)
+    console.log('filteredPeople', filteredPeople)
 
     // Only one flag so it's sure this last person gets chosen
     let only_one = ''
@@ -222,5 +227,75 @@ export default class DataHandler {
   // compute list of people that are in filtered people but is not mod
   public modlistForMod = (mods: string[]): string[] => {
     return this.filterPeople.value.filter((person) => !mods.includes(person))
+  }
+
+
+
+  private filterPeopleNotAvailableForPreparation = (filteredPeople: string[]) => {
+    console.log('filterPeopleNotAvailableForPreparation', filteredPeople, typeof this.missesInPrepareTime.value)
+    if (this.workbookAnwesenheit.value === undefined || this.dateObj.value === undefined) return filteredPeople
+    // get date two weeks before this.dateObj.value
+    console.log(this.dateObj.value)
+    const day = parseInt(this.dateObj.value.split('.')[0])
+    const month = parseInt(this.dateObj.value.split('.')[1])
+    const year = parseInt(this.dateObj.value.split('.')[2])
+    const startDay = day >= this.prepareTime.value ? day - this.prepareTime.value : 30 + day - this.prepareTime.value
+    const startMonth = day >= this.prepareTime.value ? month : month - 1 % 12
+    const startYear = month !== startMonth ? year : year - 1
+    
+    // GetMoth of dateTwoWeeksBefore
+    const startWorksheetNumber = Math.ceil((startMonth ) / 2)-1;
+    const endWorksheetNumber = Math.ceil((month) / 2)-1;
+
+    console.log(startWorksheetNumber, endWorksheetNumber)
+
+    const adder = (month:number, year:number) => { return month % 2 === 1 ? 0 : (new Date(year, month, 0)).getDate();}
+
+    let remover: string[] = []
+    // Loop through filteredPeople
+    for(let i = 0; i < filteredPeople.length; i++) {
+      const person = filteredPeople[i]
+      const removeIndex = filteredPeople.indexOf(person)
+      if(removeIndex === -1) continue
+
+      let counterMissedDays = 0;
+
+      // Loop through all worksheets in workbook
+      for (let j = startWorksheetNumber; j <= endWorksheetNumber; j++) {
+        const worksheet = this.workbookAnwesenheit.value.worksheets[j]
+        const delimiter = startWorksheetNumber === endWorksheetNumber ? day + adder(month, year) + 5  : j == startMonth ? worksheet.getRow(7).actualCellCount : 5 + day
+        const start = startDay + 5 + adder(startMonth, startYear)
+        // Find cell adress of person
+        // TODO optimate because people with identival names cause problems
+        const cell = this.findCellWithParameter(person.split(' ')[1], worksheet.name)
+        if(cell === null) continue
+
+        for(let k = start; k < delimiter; k++) {
+          if (worksheet.getCell(cell.row, k).value !== null && worksheet.getCell(cell.row, k).value !== ' ') {
+            counterMissedDays++
+            // console.log(person, k, cell.row, worksheet.getCell(cell.row, k).value)
+
+            if(counterMissedDays === this.missesInPrepareTime.value + 1) {
+              console.log('Remove', person, 'from filteredPeople because of', counterMissedDays, 'missed days')
+              remover.push(person)
+              break
+            }
+          }
+        } 
+      }
+    }
+    console.log("result", filteredPeople, remover)
+    return filteredPeople.filter(person => !remover.includes(person))
+  }
+
+
+  private formatDate(inputDate:string) {
+    // Zerlege den Eingabestring anhand des Punktes in ein Array
+    const parts = inputDate.split('.');
+  
+    // Stelle die Teile des Datums im richtigen Format zusammen
+    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  
+    return formattedDate;
   }
 }

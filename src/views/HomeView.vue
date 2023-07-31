@@ -13,7 +13,6 @@ import NumbersInput from '@/components/NumbersInput.vue';
 import DataHandler from '@/functions/dataHandler';
 
 const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-const prepareTime = ref<number>(14);
 
 const ops: string[] = ['Alle Azubis / Studenten', 'Bachelorstudenten auslassen']
 const selectedOps = 1;
@@ -37,12 +36,16 @@ const handler = new DataHandler();
     <h2>Termin</h2>
     <DateInput label="Azubirundentermin eingeben" @date-selected="handler.newdate"/>
     <!-- <p>{{ handler.dateObj }}</p> -->
-    <h2>Vorbereitungszeit</h2>
-    <NumbersInput :value="prepareTime" @number-selected="prepareTime=$event"/>
+    <div>
+      <h2>Vorbereitungszeit</h2>
+      <div style="display: flex; flex-direction: row; justiofy-content: center;">
+        <NumbersInput :value="handler.prepareTime.value" @number-selected="handler.prepareTime.value=$event" style="margin-right: 32px"/>
+        <NumbersInput label="Maximale Fehltage in Vorbereitungszeit" :value="handler.missesInPrepareTime.value" @number-selected="handler.missesInPrepareTime.value=$event"/>
+      </div>
+    </div>
+    
     <h2>Gruppeneinschränkungen</h2>
     <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="handler.group.value=$event"/>
-    
-    <p v-show="false">{{ handler.filterPeople.value.length }}</p>
     
     <div class="details">
       <div class="present-list">
