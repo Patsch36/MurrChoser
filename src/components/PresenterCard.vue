@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, vModelSelect, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import ContextMenu from './ContextMenu.vue';
 
 
