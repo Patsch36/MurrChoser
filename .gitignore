@@ -28,3 +28,5 @@ coverage
 *.sw?
 
 SampleData
+MurrChoser-win32-x64
+windows_installer

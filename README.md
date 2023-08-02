@@ -46,16 +46,35 @@ npm run build
 npm run lint
 ```
 
+## Build Excecutable
+
+First run the following command to build the website fpr production.
+```sh
+npm run build
+```
+Then run the next command for creating a real program:
+```sh
+electron-packager ./ --platform=win32 --arch=x64 MurrChoser --electron-version 13.1.9
+```
+make sure electron-packager is installed globally. Then install the [wix packing tools](https://github.com/wixtoolset/wix3/releases) and add the installed bin folder to path Variables.
+The folder can be found under programs-x86/WiX Toolset v--Version--.
+Now just run the last command to build the installer
+```sh
+node .\build_installer.js
+```
+
+
+
 ## TODO
 
 - [ ] Advanced Generation Options for mods (Choose between amounts of moderations already)
 
 - [ ] Refactor malchosen computed Property FilerPeople to watch
 
-- [ ] Auswahl ändern
+- [x] Auswahl ändern
 
 - [ ] Frischlinge bis Januar auslassen
 
 - [ ] MIT Lizenzen in Footer einfügen
 
-- [ ] CSS-Breiten und Höhen mit min-width/height: absoluten wert, width/height: relativen Wert darstellen
+- [x] CSS-Breiten und Höhen mit min-width/height: absoluten wert, width/height: relativen Wert darstellen
