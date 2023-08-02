@@ -4,27 +4,70 @@ import { type Moderatoren, type Moderator, getCellValue } from '@/types/Moderato
 import { countModerators } from '@/functions/dictionaryCounter'
 import { isHoliday } from 'feiertagejs'
 
+
+/**
+   * Class that handles the data for the MurrChoser application.
+   */
 export default class DataHandler {
+  
+  /**
+   * Ref to the workbook containing the attendance data.
+   */
   private workbookAnwesenheit = ref<Excel.Workbook>()
+  /**
+   * Ref to the workbook containing the moderators data.
+   */
   private workbookModeratoren = ref<Excel.Workbook>()
 
+  /**
+   * Ref to an array of moderators.
+   */
   public moderatoren = ref<Moderator[]>([])
+  /**
+   * Ref to an array of bachelor moderators.
+   */
   public bachelorModeratoren = ref<string[]>([])
 
+  /**
+   * Ref to the first moderator.
+   */
   public mod1 = ref<string>('')
+  /**
+   * Ref to the second moderator.
+   */
   public mod2 = ref<string>('')
 
+  /**
+   * Options for formatting dates.
+   */
   static dateOptions: Intl.DateTimeFormatOptions = {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'
   }
+  /**
+   * Ref to the selected date.
+   */
   public dateObj = ref<string>(new Date().toLocaleDateString('de-DE', DataHandler.dateOptions))
+  /**
+   * Ref to the selected group.
+   */
   public group = ref<string>('')
 
+  /**
+   * Ref to the time in minutes to prepare the moderation.
+   */
   public prepareTime = ref<number>(14);
+  /**
+   * Ref to the number of misses allowed in the preparation time.
+   */
   public missesInPrepareTime = ref<number>(5);
 
+
+  /**
+   * Handles the selected file by reading it as an array buffer and loading it into the workbookAnwesenheit property.
+   * @param file - The selected file to be loaded.
+   */
   public handleFileSelected = (file: File) => {
     const reader = new FileReader()
 
@@ -39,6 +82,12 @@ export default class DataHandler {
     reader.readAsArrayBuffer(file)
   }
 
+
+  /**
+   * Handles the selected file by reading it as an array buffer and loading it into the workbookModeratoren property.
+   * It then extracts the moderators and bachelor moderators from the loaded file.
+   * @param file - The selected file to be loaded.
+   */
   public handleModeratorenlist = (file: File) => {
     const reader = new FileReader()
 
@@ -85,6 +134,11 @@ export default class DataHandler {
     reader.readAsArrayBuffer(file)
   }
 
+  /**
+   * Computed property that returns an array of people who are present on the selected date.
+   * It iterates through all worksheets in the workbookAnwesenheit property and extracts the names of people who are present on the selected date.
+   * @returns An array of strings representing the names of people who are present on the selected date.
+   */
   public getPeople = computed(() => {
     const people: string[] = []
     if (this.workbookAnwesenheit.value === undefined) return []
@@ -139,6 +193,12 @@ export default class DataHandler {
     return people
   })
 
+/**
+ * Finds the first cell in the specified worksheet that contains the given parameter.
+ * @param parameter - The value to search for in the worksheet.
+ * @param worksheetname - The name of the worksheet to search in.
+ * @returns The first cell that contains the given parameter, or null if no cell is found.
+ */
   public findCellWithParameter = (parameter: string, worksheetname: string): Excel.Cell | null => {
     if (!this.workbookAnwesenheit.value || this.workbookAnwesenheit.value === undefined) return null
 
@@ -163,15 +223,33 @@ export default class DataHandler {
     return null // Zelle nicht gefunden
   }
 
+
+  /**
+   * Updates the selected date to the given new date.
+   * @param newdate - The new date to be set.
+   */
   public newdate = (newdate: string) => {
     const date = new Date(newdate)
     this.dateObj.value = date.toLocaleString('de-DE', DataHandler.dateOptions)
   }
 
+
+  /**
+   * Computed property that returns the highest amount of moderations done by a moderator.
+   * It sorts the moderators array by amount of moderations in descending order and returns the amount of the first moderator in the sorted array.
+   * @returns The highest amount of moderations done by a moderator.
+   */
   public highestMod = computed(() => {
     return this.moderatoren.value.sort((a, b) => b.amount - a.amount)[0].amount
   })
 
+/**
+ * Computed property that filters the list of people who are present on the selected date and removes those who have already moderated.
+ * It also removes bachelor students if the group property is set to 'Bachelorstudenten auslassen'.
+ * It then filters out people who are not available for preparation using the filterPeopleNotAvailableForPreparation method.
+ * Finally, it randomly selects two people from the filtered list to be moderators and sets them to the mod1 and mod2 properties.
+ * @returns An array of strings representing the filtered list of people who can be moderators.
+ */
   public filterPeople = computed(() => {
     if (this.getPeople.value.length === 0 || this.moderatoren.value.length === 0) return []
 
@@ -224,13 +302,22 @@ export default class DataHandler {
     return returnlist
   })
 
-  // compute list of people that are in filtered people but is not mod
+  /**
+   * Computes a list of people who are in the filtered list of people but are not already moderators.
+   * @param mods - An array of strings representing the names of current moderators.
+   * @returns An array of strings representing the names of people who are in the filtered list of people but are not already moderators.
+   */
   public modlistForMod = (mods: string[]): string[] => {
     return this.filterPeople.value.filter((person) => !mods.includes(person))
   }
 
-
-
+/**
+ * Filters out people who are not available for preparation based on the number of missed days in the past two weeks.
+ * It loops through all worksheets in the workbookAnwesenheit property and counts the number of missed days for each person in the filteredPeople array.
+ * If a person has missed more than the number of days specified in the missesInPrepareTime property, they are removed from the filteredPeople array.
+ * @param filteredPeople - An array of strings representing the names of people who are present on the selected date and have not already moderated.
+ * @returns An array of strings representing the names of people who are available for preparation and can be moderators.
+ */
   private filterPeopleNotAvailableForPreparation = (filteredPeople: string[]) => {
     console.log('filterPeopleNotAvailableForPreparation', filteredPeople, typeof this.missesInPrepareTime.value)
     if (this.workbookAnwesenheit.value === undefined || this.dateObj.value === undefined) return filteredPeople
@@ -286,16 +373,5 @@ export default class DataHandler {
     }
     console.log("result", filteredPeople, remover)
     return filteredPeople.filter(person => !remover.includes(person))
-  }
-
-
-  private formatDate(inputDate:string) {
-    // Zerlege den Eingabestring anhand des Punktes in ein Array
-    const parts = inputDate.split('.');
-  
-    // Stelle die Teile des Datums im richtigen Format zusammen
-    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-  
-    return formattedDate;
   }
 }
