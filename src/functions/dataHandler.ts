@@ -53,6 +53,10 @@ export default class DataHandler {
    * Ref to the selected group.
    */
   public group = ref<string>('')
+  /**
+   * Ref to the selected group2.
+   */
+  public group2 = ref<string>('')
 
   /**
    * Ref to the time in minutes to prepare the moderation.
@@ -62,7 +66,10 @@ export default class DataHandler {
    * Ref to the number of misses allowed in the preparation time.
    */
   public missesInPrepareTime = ref<number>(5);
-
+  /**
+   * Ref to the number of days after presetnation without Exams.
+   */
+  public afterTime = ref<number>(25);
 
   /**
    * Handles the selected file by reading it as an array buffer and loading it into the workbookAnwesenheit property.
@@ -156,7 +163,7 @@ export default class DataHandler {
       const parts = this.dateObj.value.split('.')
       const isoDateString = `${parts[2]}-${parts[1]}-${parts[0]}`
       const chosenDate = new Date(isoDateString)
-      console.log(chosenDate.getDay())
+      //console.log(chosenDate.getDay())
       if (chosenDate.getDay() % 6 === 0 || isHoliday(chosenDate, 'BW')) {
         return []
       }
@@ -257,7 +264,7 @@ export default class DataHandler {
     let moderatorNamen: string[] = this.moderatoren.value.map((moderator) => moderator.moderator)
 
     // Alle bachelorstudenten entfernen:
-    console.log('GROUP:', this.group.value)
+    //console.log('GROUP:', this.group.value)
     if (this.group.value === 'Bachelorstudenten auslassen')
       filteredPeople = filteredPeople.filter(
         (person) =>
@@ -268,8 +275,16 @@ export default class DataHandler {
     filteredPeople = filteredPeople.filter(
       (person) => !moderatorNamen.some((_moderator: string) => _moderator === person)
     )
-    
+
+    // Filter first year
+    if (this.group2.value === 'Ohne 1. Lehrjahr')
+    {
+      let firstYearPeople = this.findFirstYearPeople(filteredPeople)
+      filteredPeople = filteredPeople.filter(person => !firstYearPeople.includes(person)) 
+    }
+
     filteredPeople = this.filterPeopleNotAvailableForPreparation(filteredPeople)
+    
     console.log('filteredPeople', filteredPeople)
 
     // Only one flag so it's sure this last person gets chosen
@@ -278,9 +293,10 @@ export default class DataHandler {
       if (filteredPeople.length === 1) only_one = filteredPeople[0]
 
       for (let presentations = 2; presentations <= this.highestMod.value; presentations++) {
-        const moderatorNamen: string[] = this.moderatoren.value
+        let moderatorNamen: string[] = this.moderatoren.value
           .filter((moderator) => moderator.amount < presentations)
           .map((moderator) => moderator.moderator)
+        moderatorNamen = this.filterPeopleNotAvailableForPreparation(moderatorNamen)  
         filteredPeople = filteredPeople.concat(moderatorNamen)
         if (filteredPeople.length > 1) break
       }
@@ -288,7 +304,7 @@ export default class DataHandler {
 
     const returnlist = filteredPeople.slice()
     if (only_one !== '') {
-      this.mod1.value = only_one
+      this.mod1.value =  only_one
       filteredPeople.splice(
         filteredPeople.findIndex((person) => person === only_one),
         1
@@ -319,22 +335,26 @@ export default class DataHandler {
  * @returns An array of strings representing the names of people who are available for preparation and can be moderators.
  */
   private filterPeopleNotAvailableForPreparation = (filteredPeople: string[]) => {
-    console.log('filterPeopleNotAvailableForPreparation', filteredPeople, typeof this.missesInPrepareTime.value)
+    //console.log('filterPeopleNotAvailableForPreparation', filteredPeople, typeof this.missesInPrepareTime.value)
     if (this.workbookAnwesenheit.value === undefined || this.dateObj.value === undefined) return filteredPeople
     // get date two weeks before this.dateObj.value
     console.log(this.dateObj.value)
     const day = parseInt(this.dateObj.value.split('.')[0])
     const month = parseInt(this.dateObj.value.split('.')[1])
     const year = parseInt(this.dateObj.value.split('.')[2])
+    // TODO just wor in second half of the year cause of magic number 30 as day count for mounths
     const startDay = day >= this.prepareTime.value ? day - this.prepareTime.value : 30 + day - this.prepareTime.value
     const startMonth = day >= this.prepareTime.value ? month : month - 1 % 12
     const startYear = month !== startMonth ? year : year - 1
-    
+    const endDay =  (day + this.afterTime.value) >= 30 ? -(30 - day - this.afterTime.value) : day + this.afterTime.value
+    const endMonth = (day + this.afterTime.value) <= 30 ? month : month + 1 % 12
+    const endYear = year //month !== endMonth ? year : year + 1
+    console.log(endDay, endMonth, endYear)
     // GetMoth of dateTwoWeeksBefore
     const startWorksheetNumber = Math.ceil((startMonth ) / 2)-1;
     const endWorksheetNumber = Math.ceil((month) / 2)-1;
 
-    console.log(startWorksheetNumber, endWorksheetNumber)
+    //console.log(startWorksheetNumber, endWorksheetNumber)
 
     const adder = (month:number, year:number) => { return month % 2 === 1 ? 0 : (new Date(year, month, 0)).getDate();}
 
@@ -352,6 +372,9 @@ export default class DataHandler {
         const worksheet = this.workbookAnwesenheit.value.worksheets[j]
         const delimiter = startWorksheetNumber === endWorksheetNumber ? day + adder(month, year) + 5  : j == startMonth ? worksheet.getRow(7).actualCellCount : 5 + day
         const start = startDay + 5 + adder(startMonth, startYear)
+        const end = startWorksheetNumber === endWorksheetNumber ? endDay + adder(endMonth, endYear) : j == endMonth ? worksheet.getRow(7).actualCellCount :  5 + endDay  
+        const actDate = day + 5 +  adder(month, year)
+
         // Find cell adress of person
         // TODO optimate because people with identival names cause problems
         const cell = this.findCellWithParameter(person.split(' ')[1], worksheet.name)
@@ -366,12 +389,48 @@ export default class DataHandler {
               console.log('Remove', person, 'from filteredPeople because of', counterMissedDays, 'missed days')
               remover.push(person)
               break
-            }
+            }          
           }
         } 
+        console.log(actDate, end)
+        for(let k = actDate; k < end; k++){
+            if(worksheet.getCell(cell.row, k).value == 'AP' || worksheet.getCell(cell.row, k).value == 'ZP') {
+              console.log('Remove', person, 'from filteredPeople because of Exams on', this.afterTime.value, 'days after presentation date')
+              remover.push(person)
+              break
+            } 
+        }
       }
     }
     console.log("result", filteredPeople, remover)
     return filteredPeople.filter(person => !remover.includes(person))
+  }
+
+  private findFirstYearPeople = (filteredPeople : string[]) => {
+    if (this.workbookAnwesenheit.value === undefined || this.dateObj.value === undefined) return filteredPeople
+    const month = parseInt(this.dateObj.value.split('.')[1])
+    const worksheet = this.workbookAnwesenheit.value.worksheets[Math.ceil((month) / 2)-1]
+    let firstYearPeople : string[] = []
+    console.log("filteredPeople.length:" , filteredPeople.length)
+    for(let j = 0; j < filteredPeople.length; j++)
+    {
+        const cell = this.findCellWithParameter(filteredPeople[j].split(' ')[1], worksheet.name) 
+        if(cell === null) continue
+        console.log("cell:" , cell.row)
+        var Lehrjahr = worksheet.getCell(cell.row , 3).value?.toString()
+        console.log("Lehrjahr:" , Lehrjahr)
+        if(Lehrjahr != undefined)
+        {
+          console.log("Lehrjahr:" , Lehrjahr)
+          if(Lehrjahr.includes('1'))
+          {
+            const person = filteredPeople[j]
+            console.log("Removed",  person , "because is in first year")
+            firstYearPeople.push(person)
+          }
+        }
+    }
+    console.log("firstYearPeople: " , firstYearPeople)
+    return firstYearPeople
   }
 }

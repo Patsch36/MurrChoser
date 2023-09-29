@@ -15,6 +15,7 @@ import DataHandler from '@/functions/dataHandler';
 const excelFileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 const ops: string[] = ['Alle Azubis / Studenten', 'Bachelorstudenten auslassen']
+const ops2: string[] = ['Mit 1. Lehrjahr', 'Ohne 1. Lehrjahr']
 const selectedOps = 1;
 
 
@@ -43,9 +44,18 @@ const handler = new DataHandler();
         <NumbersInput label="Maximale Fehltage in Vorbereitungszeit" :value="handler.missesInPrepareTime.value" @number-selected="handler.missesInPrepareTime.value=$event"/>
       </div>
     </div>
+    <div>
+      <h2>Zeitraum danach ohne Prüfung</h2>
+      <div style="display: flex; flex-direction: row; justiofy-content: center;">
+        <NumbersInput :value="handler.afterTime.value" @number-selected="handler.afterTime.value=$event" style="margin-right: 32px"/>
+      </div>
+    </div>
     
     <h2>Gruppeneinschränkungen</h2>
     <RadioButtonInput :options="ops" :selected="selectedOps" @option-selected="handler.group.value=$event"/>
+    
+    <h2>Erstes Lehrjahr filtern</h2>
+    <RadioButtonInput :options="ops2" :selected="selectedOps" @option-selected="handler.group2.value=$event"/>
     
     <div class="details">
       <div class="present-list">
