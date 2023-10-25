@@ -61,7 +61,7 @@ const handler = new DataHandler();
       <div class="present-list">
         <h2 v-if="handler.getPeople.value.length">Verfügbare Personen</h2>
         <ol>
-          <li v-for="name in handler.getPeople.value" :key="name">{{ name }}</li>
+          <li v-for="name in handler.getPeople.value" :key="name" @click="handler.handleManualSelection(name)" :class="{ added: handler.manualSelected.value.includes(name) }" class="present-list">{{ name }}</li>
         </ol>
       </div>
       <div class="present-list">
@@ -127,6 +127,16 @@ main{
 
   .modlistheader {
     margin-top: 0;
+  }
+
+  .present-list {
+    transition: .25s ease-in-out;
+    cursor: pointer;
+  }
+
+  .added {
+    color: #777;
+    text-decoration: line-through;
   }
 } 
 </style>

@@ -29,6 +29,11 @@ export default class DataHandler {
   public bachelorModeratoren = ref<string[]>([])
 
   /**
+   * Ref to an array of manual selected Mods.
+   */
+  public manualSelected = ref<string[]>([])
+
+  /**
    * Ref to the first moderator.
    */
   public mod1 = ref<string>('')
@@ -108,7 +113,8 @@ export default class DataHandler {
           if (this.workbookModeratoren.value === undefined) return
 
           const worksheet = this.workbookModeratoren.value.getWorksheet(1)
-          const rows = worksheet.getRows(9, 17)
+          // TODO Make this dynamic
+          const rows = worksheet.getRows(9, 30)
 
           if (rows === undefined) return
 
@@ -260,7 +266,7 @@ export default class DataHandler {
   public filterPeople = computed(() => {
     if (this.getPeople.value.length === 0 || this.moderatoren.value.length === 0) return []
 
-    let filteredPeople = this.getPeople.value
+    let filteredPeople = this.getPeople.value.filter((person) => !this.manualSelected.value.includes(person))
     let moderatorNamen: string[] = this.moderatoren.value.map((moderator) => moderator.moderator)
 
     // Alle bachelorstudenten entfernen:
@@ -433,4 +439,16 @@ export default class DataHandler {
     console.log("firstYearPeople: " , firstYearPeople)
     return firstYearPeople
   }
+
+  /**
+   * Handles manual selection of a name.
+   * @param name - The name to be manually selected.
+   */
+  public handleManualSelection = (name: string) => {
+    if (this.manualSelected.value.includes(name)) {
+      this.manualSelected.value.splice(this.manualSelected.value.indexOf(name), 1)
+    } else {
+      this.manualSelected.value.push(name)
+    }
+  } 
 }
